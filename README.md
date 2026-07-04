@@ -89,11 +89,21 @@ sign in). The app is fully usable offline.
 > to `{ apiKey: "…", databaseURL: "…" }` before deploying; then the only step is
 > signing in.
 
-## Offline use
+## Offline use (installable PWA)
 
-The app stores your work locally and continues to function without a connection
-(and without signing in). When you sign in and come back online, changes reconcile
-with your own private notebook in the cloud.
+The app is a **Progressive Web App**. A service worker (`sw.js`) caches the app
+shell and its runtime dependencies (React, Babel, Firebase SDK) on first load, so
+after visiting once it **opens and works with no connection at all** — not just your
+notes, but the whole app. It's also **installable**: on mobile use "Add to Home
+Screen" (or the install icon on desktop) to launch it full-screen like a native app.
+
+Your work is always stored locally and continues to function offline (and without
+signing in). When you sign in and come back online, changes reconcile with your own
+private notebook in the cloud.
+
+> The service worker only runs over HTTPS (e.g. your Netlify URL), not from a
+> `file://` copy. `manifest.json` + `icon-192.png` / `icon-512.png` provide the
+> install metadata and icon.
 
 ## Hosting on Netlify
 

@@ -7,6 +7,8 @@
   command = ""
 
 # Serve index.html for any path so deep links / refreshes always load the app.
+# (Real files like /sw.js, /manifest.json and the icons are served directly;
+# this rewrite only applies to paths that don't match a file.)
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -19,3 +21,15 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# The service worker and manifest must not be cached long, so app updates reach
+# users promptly (the service worker then manages caching of everything else).
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "no-cache"

@@ -9,36 +9,65 @@ There is no build step.
 
 ## How collaboration works
 
-Live sync is powered by **Firebase Realtime Database**. The app loads the Firebase
-SDK (v10.12.2) from Google's CDN at runtime — so no Firebase keys are stored in
-this repository. Instead, each person enters the connection details inside the app
-the first time they open it:
+Live sync is powered by **Firebase Realtime Database** with **Firebase
+Authentication** (email + password). The app loads the Firebase SDK (v10.12.2)
+from Google's CDN at runtime — no Firebase keys are stored in this repository.
 
-1. **API key** — your Firebase project's web `apiKey`.
-2. **Database URL** — your Firebase `databaseURL`
+Each person **signs in with their own account**. Once signed in, your notes sync
+automatically to every device where you sign in, and both people share the same
+journal (both profiles, Abdalla & Fathia, are visible to collaborate). Because the
+notebook is behind a login, the database can be **locked so only signed-in users
+can read or write it** — your notes are no longer world-readable.
+
+The app still works fully **offline / signed-out**: notes are saved locally and
+sync turns on once you sign in.
+
+### Setting up the Firebase backend (one-time, ≈ 5 min)
+
+1. Create a free project at <https://console.firebase.google.com> → **Add project**
+   (skip Analytics).
+2. **Build → Realtime Database → Create Database** → pick a location.
+3. **Build → Authentication → Get started** → enable the **Email/Password**
+   provider.
+4. Gear → **Project settings** → under *Your apps* click the **`</>`** (web) icon,
+   register an app, and copy its **`apiKey`** and **`databaseURL`**
    (e.g. `https://your-project-default-rtdb.firebaseio.com`).
-3. **Room code** — any shared word/phrase you both agree on (e.g. `baqarah-2026`).
-   Everyone using the **same room code** sees the same shared journal.
+5. In **Realtime Database → Rules**, lock the database to signed-in users and
+   publish:
 
-These values are saved in the browser's `localStorage`, so you only enter them once
-per device.
+   ```json
+   {
+     "rules": {
+       ".read": "auth != null",
+       ".write": "auth != null"
+     }
+   }
+   ```
 
-### Setting up the Firebase backend (one-time)
+6. Open the app → the **Live sync** panel → paste the `databaseURL` and `apiKey`
+   (stored once per device), then **Create account** / **Sign in**. Have your study
+   partner do the same with their own email + password.
 
-1. Create a free project at <https://console.firebase.google.com>.
-2. Add a **Web app** to the project and copy its `apiKey` and `databaseURL`.
-3. Enable **Realtime Database** (Build → Realtime Database → Create database).
-4. Share the `apiKey`, `databaseURL`, and an agreed **room code** with your study partner.
+> **Tighter privacy (optional):** `auth != null` lets anyone who creates an account
+> read the notebook. To restrict it to just the two of you, create both accounts
+> first, find each user's **UID** in Authentication → Users, and change the rules to
+> allow only those UIDs, e.g.
+> `".read": "auth != null && (auth.uid === 'UID_1' || auth.uid === 'UID_2')"`
+> (and the same for `".write"`).
 
-> **Security note:** A Firebase web `apiKey` is *not* a secret — it only identifies
-> the project. Access is controlled by your **Realtime Database security rules**.
-> Lock those rules down (e.g. require authentication, or restrict to your room paths)
-> before relying on this for anything private.
+> **Note:** A Firebase web `apiKey` is *not* a secret — it only identifies the
+> project. Real access control comes from the security rules above.
+
+> **Baking in the project (optional):** to skip the one-time `apiKey`/`databaseURL`
+> entry entirely, set the `FIREBASE_CONFIG` constant near the top of the app's script
+> to `{ apiKey: "…", databaseURL: "…" }` before deploying; then the only step is
+> signing in.
 
 ## Offline use
 
-The app stores your work locally and continues to function without a connection.
-When you come back online, changes reconcile with the shared room.
+The app stores your work locally and continues to function without a connection
+(and without signing in). When you sign in and come back online, changes reconcile
+with the shared notebook.
 
 ## Hosting on Netlify
 
@@ -54,5 +83,9 @@ This repo is Netlify-ready (`netlify.toml` publishes the root, no build needed).
 1. Go to <https://app.netlify.com/drop>.
 2. Drag `index.html` onto the page. It goes live in seconds.
 
-Once deployed, share the Netlify URL with your study partner, have you both enter the
-same Firebase details + room code, and you're journaling together.
+Once deployed, share the Netlify URL with your study partner. Each of you enters the
+same Firebase project details once, then signs in with your own account — and you're
+journaling together.
+
+> **Google sign-in note:** if you later switch to Google sign-in, add your Netlify
+> domain under Firebase → Authentication → Settings → **Authorized domains**.

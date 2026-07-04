@@ -15,10 +15,16 @@ from Google's CDN at runtime — no Firebase keys are stored in this repository.
 
 The app opens on a **login screen**. Anyone can **Create account** (open,
 self-service registration — no manual user creation in the Firebase console) or
-**Sign in**. Each account has its **own completely private notebook**: your notes are
-stored under your user ID (`users/<your-uid>/…`) and, with the security rules below,
-**only you can read or write them**. Signing in on another device brings your own
-notebook with you; nobody else can see it.
+**Sign in**. After signing in the first time, you **pick your name** (e.g. Abdalla or
+Fathia) to **claim** that notebook — the first account to claim a name keeps it, and
+its existing notes become yours; the other name stays for your study partner. There's
+no profile switcher: you just see your own name.
+
+Each account has its **own completely private notebook**: your notes are stored under
+your user ID (`users/<your-uid>/…`) and, with the security rules below, **only you can
+read or write them**. Names are reserved in a small `claims` registry so two people
+can't grab the same one. Signing in on another device brings your own notebook with
+you; nobody else can see it.
 
 You're never locked out: the login screen has a **"Continue offline on this device"**
 link that opens your local notes without signing in (sync just stays off until you
@@ -45,6 +51,12 @@ sign in). The app is fully usable offline.
    ```json
    {
      "rules": {
+       "claims": {
+         "$name": {
+           ".read":  "auth != null",
+           ".write": "auth != null && (!data.exists() || data.val() === auth.uid)"
+         }
+       },
        "users": {
          "$uid": {
            ".read":  "auth != null && auth.uid === $uid",
@@ -56,13 +68,16 @@ sign in). The app is fully usable offline.
    ```
 
 6. Open the app → on the login screen, paste the `databaseURL` and `apiKey` once
-   (stored per device), then **Create account** or **Sign in**. Anyone you share the
-   link with can do the same and gets their own private notebook.
+   (stored per device), then **Create account** or **Sign in**, and pick your name to
+   claim your notebook. Anyone you share the link with can do the same and gets their
+   own private notebook.
 
 > **Why this is secure:** every account's data lives under `users/<uid>`, and the
-> rule only lets a signed-in user read/write the subtree matching **their own** UID.
-> A stranger can register, but can only ever see their own (empty) notebook — never
-> yours. This also clears Firebase's "not secure" warning.
+> rule only lets a signed-in user read/write the subtree matching **their own** UID —
+> a stranger can register but can only ever see their own (empty) notebook, never
+> yours. The `claims` rule lets each name be written **only while unclaimed** (or by
+> its current owner), so a name can't be stolen once taken. This also clears
+> Firebase's "not secure" warning.
 
 > **Note:** A Firebase web `apiKey` is *not* a secret — it only identifies the
 > project. Real access control comes from the security rules above.

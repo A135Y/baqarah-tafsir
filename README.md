@@ -1,34 +1,32 @@
 # Baqarah Tafsir Journal
 
-A collaborative, offline-capable journal for studying *Tafsir* of Surah al-Baqarah.
-Two people can take notes at the same time and stay in sync, and the app keeps
-working when you lose connection.
+A personal, offline-capable journal for studying *Tafsir* of Surah al-Baqarah.
+Each person gets their own **private** notebook that syncs across their devices, and
+the app keeps working when you lose connection.
 
 The entire app is a **single self-contained file** — [`index.html`](./index.html).
 There is no build step.
 
-## How collaboration works
+## How accounts & sync work
 
 Live sync is powered by **Firebase Realtime Database** with **Firebase
 Authentication** (email + password). The app loads the Firebase SDK (v10.12.2)
 from Google's CDN at runtime — no Firebase keys are stored in this repository.
 
-The app opens on a **login screen**. Each person **signs in with their own
-account** (or taps **Create account** to self-register — no manual user creation in
-the Firebase console). Once signed in, your notes sync automatically to every device
-where you sign in, and both people share the same journal (both profiles, Abdalla &
-Fathia, are visible to collaborate). Because the notebook is behind a login, the
-database can be **locked so only your accounts can read or write it** — your notes
-are no longer world-readable.
+The app opens on a **login screen**. Anyone can **Create account** (open,
+self-service registration — no manual user creation in the Firebase console) or
+**Sign in**. Each account has its **own completely private notebook**: your notes are
+stored under your user ID (`users/<your-uid>/…`) and, with the security rules below,
+**only you can read or write them**. Signing in on another device brings your own
+notebook with you; nobody else can see it.
 
 You're never locked out: the login screen has a **"Continue offline on this device"**
 link that opens your local notes without signing in (sync just stays off until you
 sign in). The app is fully usable offline.
 
-**Registration invite code:** account creation is gated by a shared invite code so
-random people can't self-register through the app. Set it via the `INVITE_CODE`
-constant near the top of the app's script (default `"baqarah-journal"` — change it,
-and share it only with your study partner). Set it to `""` to allow open sign-up.
+> **Optional — gate registration:** if you'd rather not allow fully open sign-up,
+> set the `INVITE_CODE` constant near the top of the app's script to a shared code;
+> the Create-account screen will then require it. It ships as `""` (open).
 
 ### Setting up the Firebase backend (one-time, ≈ 5 min)
 
@@ -40,29 +38,31 @@ and share it only with your study partner). Set it to `""` to allow open sign-up
 4. Gear → **Project settings** → under *Your apps* click the **`</>`** (web) icon,
    register an app, and copy its **`apiKey`** and **`databaseURL`**
    (e.g. `https://your-project-default-rtdb.firebaseio.com`).
-5. In **Realtime Database → Rules**, lock the database to **your two emails**
-   (recommended — you know these up front, so there's nothing to create or look up
-   first), and publish:
+5. In **Realtime Database → Rules**, scope each account to its own private data and
+   publish. This is the correct, secure rule for per-user notebooks — open
+   registration is safe because each user can only ever touch their own subtree:
 
    ```json
    {
      "rules": {
-       ".read":  "auth != null && (auth.token.email === 'abdalla@example.com' || auth.token.email === 'fathia@example.com')",
-       ".write": "auth != null && (auth.token.email === 'abdalla@example.com' || auth.token.email === 'fathia@example.com')"
+       "users": {
+         "$uid": {
+           ".read":  "auth != null && auth.uid === $uid",
+           ".write": "auth != null && auth.uid === $uid"
+         }
+       }
      }
    }
    ```
 
 6. Open the app → on the login screen, paste the `databaseURL` and `apiKey` once
-   (stored per device), then **Create account** / **Sign in**. Have your study
-   partner do the same with their own email + password.
+   (stored per device), then **Create account** or **Sign in**. Anyone you share the
+   link with can do the same and gets their own private notebook.
 
-> **Why not `auth != null`?** That rule lets *anyone* who creates an account read
-> the notebook, and Firebase flags it as insecure. The email allowlist above
-> restricts access to just the two of you (a stranger can register but gets
-> permission-denied). If you prefer UIDs over emails, create both accounts first,
-> copy each **UID** from Authentication → Users, and use
-> `"auth != null && (auth.uid === 'UID_1' || auth.uid === 'UID_2')"` instead.
+> **Why this is secure:** every account's data lives under `users/<uid>`, and the
+> rule only lets a signed-in user read/write the subtree matching **their own** UID.
+> A stranger can register, but can only ever see their own (empty) notebook — never
+> yours. This also clears Firebase's "not secure" warning.
 
 > **Note:** A Firebase web `apiKey` is *not* a secret — it only identifies the
 > project. Real access control comes from the security rules above.
@@ -76,7 +76,7 @@ and share it only with your study partner). Set it to `""` to allow open sign-up
 
 The app stores your work locally and continues to function without a connection
 (and without signing in). When you sign in and come back online, changes reconcile
-with the shared notebook.
+with your own private notebook in the cloud.
 
 ## Hosting on Netlify
 

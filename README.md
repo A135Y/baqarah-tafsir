@@ -13,14 +13,22 @@ Live sync is powered by **Firebase Realtime Database** with **Firebase
 Authentication** (email + password). The app loads the Firebase SDK (v10.12.2)
 from Google's CDN at runtime — no Firebase keys are stored in this repository.
 
-Each person **signs in with their own account**. Once signed in, your notes sync
-automatically to every device where you sign in, and both people share the same
-journal (both profiles, Abdalla & Fathia, are visible to collaborate). Because the
-notebook is behind a login, the database can be **locked so only signed-in users
-can read or write it** — your notes are no longer world-readable.
+The app opens on a **login screen**. Each person **signs in with their own
+account** (or taps **Create account** to self-register — no manual user creation in
+the Firebase console). Once signed in, your notes sync automatically to every device
+where you sign in, and both people share the same journal (both profiles, Abdalla &
+Fathia, are visible to collaborate). Because the notebook is behind a login, the
+database can be **locked so only your accounts can read or write it** — your notes
+are no longer world-readable.
 
-The app still works fully **offline / signed-out**: notes are saved locally and
-sync turns on once you sign in.
+You're never locked out: the login screen has a **"Continue offline on this device"**
+link that opens your local notes without signing in (sync just stays off until you
+sign in). The app is fully usable offline.
+
+**Registration invite code:** account creation is gated by a shared invite code so
+random people can't self-register through the app. Set it via the `INVITE_CODE`
+constant near the top of the app's script (default `"baqarah-journal"` — change it,
+and share it only with your study partner). Set it to `""` to allow open sign-up.
 
 ### Setting up the Firebase backend (one-time, ≈ 5 min)
 
@@ -32,28 +40,29 @@ sync turns on once you sign in.
 4. Gear → **Project settings** → under *Your apps* click the **`</>`** (web) icon,
    register an app, and copy its **`apiKey`** and **`databaseURL`**
    (e.g. `https://your-project-default-rtdb.firebaseio.com`).
-5. In **Realtime Database → Rules**, lock the database to signed-in users and
-   publish:
+5. In **Realtime Database → Rules**, lock the database to **your two emails**
+   (recommended — you know these up front, so there's nothing to create or look up
+   first), and publish:
 
    ```json
    {
      "rules": {
-       ".read": "auth != null",
-       ".write": "auth != null"
+       ".read":  "auth != null && (auth.token.email === 'abdalla@example.com' || auth.token.email === 'fathia@example.com')",
+       ".write": "auth != null && (auth.token.email === 'abdalla@example.com' || auth.token.email === 'fathia@example.com')"
      }
    }
    ```
 
-6. Open the app → the **Live sync** panel → paste the `databaseURL` and `apiKey`
-   (stored once per device), then **Create account** / **Sign in**. Have your study
+6. Open the app → on the login screen, paste the `databaseURL` and `apiKey` once
+   (stored per device), then **Create account** / **Sign in**. Have your study
    partner do the same with their own email + password.
 
-> **Tighter privacy (optional):** `auth != null` lets anyone who creates an account
-> read the notebook. To restrict it to just the two of you, create both accounts
-> first, find each user's **UID** in Authentication → Users, and change the rules to
-> allow only those UIDs, e.g.
-> `".read": "auth != null && (auth.uid === 'UID_1' || auth.uid === 'UID_2')"`
-> (and the same for `".write"`).
+> **Why not `auth != null`?** That rule lets *anyone* who creates an account read
+> the notebook, and Firebase flags it as insecure. The email allowlist above
+> restricts access to just the two of you (a stranger can register but gets
+> permission-denied). If you prefer UIDs over emails, create both accounts first,
+> copy each **UID** from Authentication → Users, and use
+> `"auth != null && (auth.uid === 'UID_1' || auth.uid === 'UID_2')"` instead.
 
 > **Note:** A Firebase web `apiKey` is *not* a secret — it only identifies the
 > project. Real access control comes from the security rules above.

@@ -13,13 +13,14 @@ Live sync is powered by **Firebase Realtime Database** with **Firebase
 Authentication** (email + password). The app loads the Firebase SDK (v10.12.2)
 from Google's CDN at runtime — no Firebase keys are stored in this repository.
 
-The app opens on a **login screen**. When you **Create account** you also **pick your
-name** (Abdalla or Fathia) — that claims the matching notebook. The first account to
-register with a name keeps it, and its existing notes become yours; the other name
-stays for your study partner. Your name is saved to your account, so **signing in
-again restores your notebook automatically** — no re-picking. There's no profile
-switcher: you just see your own name. (If a signed-in account has no name yet — e.g.
-one created before this change — a one-time picker appears as a fallback.)
+The app opens on a **login screen**. When you **Create account** you enter your
+**first name**. If it matches a seeded notebook (**Abdalla** or **Fathia**) you claim
+that notebook and its existing notes become yours; the first account to register with
+a name keeps it. **Any other first name creates a fresh, empty private notebook** for
+that person. Your name is saved to your account, so **signing in again restores your
+notebook automatically** — no re-picking, no profile switcher; you just see your own
+name. (Offline, an opaque "type your name" prompt opens an existing on-device notebook
+without revealing any names.)
 
 Each account has its **own completely private notebook**: your notes are stored under
 your user ID (`users/<your-uid>/…`) and, with the security rules below, **only you can

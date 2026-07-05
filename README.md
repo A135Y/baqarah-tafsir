@@ -28,6 +28,31 @@ read or write them**. Names are reserved in a small `claims` registry so two peo
 can't grab the same one. Signing in on another device brings your own notebook with
 you; nobody else can see it.
 
+### Conflict-free sync (edit on two devices safely)
+
+Sync **merges** rather than overwrites. Each note, lesson and homework item carries its
+own `updatedAt` stamp, and deletions leave a small tombstone. When a device comes back
+online the local and cloud notebooks are reconciled **item by item**:
+
+- Notes added on different devices while offline are **both kept** (union by id).
+- If the *same* note was edited on two devices, the **most recent edit wins**.
+- A deletion on one device is honoured on the other (unless that note was edited again
+  *after* it was deleted, in which case the newer edit is kept).
+
+The merge is order-independent and idempotent, so devices always converge on the same
+result with no endless push/pull loop. This replaces the old whole-notebook
+"last writer wins" behaviour, which could silently drop the other device's changes.
+
+### Multiple translations
+
+When you attach a verse to a note, the Arabic and an English translation are filled in
+automatically. A small **Translation** switch lets you choose between three bundled
+English renderings — **Saheeh International** (default), **Abdullah Yusuf Ali**, and
+**Marmaduke Pickthall** — for the whole Qur'an, entirely offline. Your choice is
+remembered per device, and switching never overwrites a translation you've typed or
+edited yourself. (The Yusuf Ali and Pickthall texts are public-domain translations
+from the [Tanzil](https://tanzil.net) project.)
+
 You're never locked out: the login screen has a **"Continue offline on this device"**
 link that opens your local notes without signing in (sync just stays off until you
 sign in). The app is fully usable offline.

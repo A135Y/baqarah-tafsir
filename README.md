@@ -28,6 +28,19 @@ read or write them**. Names are reserved in a small `claims` registry so two peo
 can't grab the same one. Signing in on another device brings your own notebook with
 you; nobody else can see it.
 
+### Account safety & recovery
+
+- **Change password** — in the account panel (the sync/status dialog), a signed-in user
+  can set a new password without deleting the account, so the notebook and reserved name
+  are preserved.
+- **Forgot password** — the sign-in screen has a **"Forgot password?"** link. Enter your
+  email and Firebase sends a reset link; open it, choose a new password, then sign in.
+- **Show / hide password** — every password field has a **Show/Hide** toggle so you can
+  check what you typed before submitting.
+- **Backup & Import** — the sidebar has **Backup** (downloads your whole notebook as a
+  JSON file) and **Import** (merges a backup file back in). Because import uses the same
+  conflict-free merge as sync, re-importing an old backup never wipes newer notes.
+
 ### Conflict-free sync (edit on two devices safely)
 
 Sync **merges** rather than overwrites. Each note, lesson and homework item carries its

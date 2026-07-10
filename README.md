@@ -66,6 +66,34 @@ remembered per device, and switching never overwrites a translation you've typed
 edited yourself. (The Yusuf Ali and Pickthall texts are public-domain translations
 from the [Tanzil](https://tanzil.net) project.)
 
+Each note can hold **several verses**, including from different sūrahs (e.g. a verse
+from al-Baqarah and one from at-Tawbah on the same note). Fill a verse, tap
+**"+ Add another verse"** to stack more, then save; each verse shows its real sūrah
+name and āyah (e.g. "At-Tawbah · 9:20").
+
+### Sync with your study partner
+
+Notebooks are private by default, but Abdalla and Fathia can pool their work: the
+sidebar shows a **"Sync with <partner>"** button. Tapping it two-way **merges** every
+lesson, note and homework item between the two of you through a shared space, using the
+same conflict-free merge as device sync (union by id, newest edit wins, deletions
+respected). After you both tap it once, you each have the complete combined journal.
+It's on-demand — nothing syncs to your partner until you press the button. (Requires
+the `shared` Firebase rule above.)
+
+### Lessons organised by Sūrah
+
+The sidebar groups lessons under the **Sūrah** they relate to (derived from the verses
+their notes cite), in mushaf order, with collapsible headings — built to scale across
+the whole Qur'an. A lesson moves into the right Sūrah automatically once its notes cite
+that Sūrah; lessons with no verse yet sit under "Other lessons".
+
+### Never lose an in-progress note
+
+Notes you're composing are saved as a **per-lesson draft**: switch lessons or tabs,
+close the app, or reload — your unfinished note is still there when you come back. A
+draft clears when you save it, or you can **Discard** it.
+
 You're never locked out: the login screen has a **"Continue offline on this device"**
 link that opens your local notes without signing in (sync just stays off until you
 sign in). The app is fully usable offline.
@@ -102,10 +130,18 @@ sign in). The app is fully usable offline.
            ".read":  "auth != null && auth.uid === $uid",
            ".write": "auth != null && auth.uid === $uid"
          }
+       },
+       "shared": {
+         ".read":  "auth != null",
+         ".write": "auth != null"
        }
      }
    }
    ```
+
+   The `shared` node powers **"Sync with your study partner"** (below). It is
+   readable/writable by any signed-in account in the project — fine for a private
+   two-person journal; leave it out if you never use partner sync.
 
 6. Open the app → on the login screen, paste the `databaseURL` and `apiKey` once
    (stored per device), then **Create account** or **Sign in**, and pick your name to

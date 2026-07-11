@@ -88,13 +88,16 @@ Lessons are matched in this order so the right ones line up without duplicating:
 
 1. **By hidden ID** — the seeded lessons always match, even if you each renamed them.
 2. **By Sūrah + lesson number** — each lesson has an editable **"#" (lesson number)** in
-   its header. If you both number, say, the third al-Baqarah lesson `3`, they merge —
-   even if your titles and dates differ. This is the most reliable match if you follow a
-   per-Sūrah numbering convention. (Only used once the lesson has a verse so its Sūrah is
-   known, so "lesson 3" of one Sūrah can't collide with "lesson 3" of another.)
-3. **By date** — every lesson also has a **date** (defaults to the day you created it,
-   editable). Both add a lesson the same day → they merge. Typed yours up late? Set the
-   date back to the class date.
+   its header. If it's blank, the number is **read from the title** (e.g. "Lesson 3 — …",
+   "Al-Baqarah L3" → `3`), so existing lessons already carry one. If you both number the
+   third al-Baqarah lesson `3`, they merge — even if your titles and dates differ. (Only
+   used once the lesson has a verse so its Sūrah is known, so "lesson 3" of one Sūrah
+   can't collide with "lesson 3" of another.)
+3. **By date** — every lesson has a **date** (editable). If blank, it's **derived from
+   when the lesson was created / first worked on**; new lessons default to today. Both
+   add a lesson the same day → they merge. Typed yours up late? Set the date to the class
+   date. (The three lessons that ship with the app have no recorded creation date, so
+   theirs shows blank until you set it — but they always match by ID anyway.)
 4. **By Sūrah + title** — if numbers and dates differ but you gave the lesson the same
    meaningful title for the same Sūrah, they still merge.
 

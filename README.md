@@ -87,17 +87,20 @@ notebooks. It's on-demand — nothing reaches your partner until you press the b
 Lessons are matched in this order so the right ones line up without duplicating:
 
 1. **By hidden ID** — the seeded lessons always match, even if you each renamed them.
-2. **By date** — every lesson has a **date** (shown in its header, defaulting to the day
-   you created it and editable). If you both add a lesson with the same date — e.g. you
-   attend the same class and each write it up that day — sync folds them into one. If you
-   type yours up a day late, just set the lesson's date back to the class date so they
-   still line up.
-3. **By Sūrah + title** — if the dates differ but you both gave the lesson the same
+2. **By Sūrah + lesson number** — each lesson has an editable **"#" (lesson number)** in
+   its header. If you both number, say, the third al-Baqarah lesson `3`, they merge —
+   even if your titles and dates differ. This is the most reliable match if you follow a
+   per-Sūrah numbering convention. (Only used once the lesson has a verse so its Sūrah is
+   known, so "lesson 3" of one Sūrah can't collide with "lesson 3" of another.)
+3. **By date** — every lesson also has a **date** (defaults to the day you created it,
+   editable). Both add a lesson the same day → they merge. Typed yours up late? Set the
+   date back to the class date.
+4. **By Sūrah + title** — if numbers and dates differ but you gave the lesson the same
    meaningful title for the same Sūrah, they still merge.
 
 A lesson that matches none of these — one only *you* have — simply transfers to your
-partner whole on the next sync (nothing to merge). Default names like "Lesson 4" and
-blank dates are never auto-merged, so unrelated lessons can't collide by accident.
+partner whole on the next sync (nothing to merge). Default names like "Lesson 4", blank
+dates, and blank numbers are never auto-merged, so unrelated lessons can't collide.
 
 ### Lessons organised by Sūrah
 

@@ -74,12 +74,15 @@ name and āyah (e.g. "At-Tawbah · 9:20").
 ### Sync with your study partner
 
 Notebooks are private by default, but Abdalla and Fathia can pool their work: the
-sidebar shows a **"Sync with <partner>"** button. Tapping it two-way **merges** every
-lesson, note and homework item between the two of you through a shared space, using the
-same conflict-free merge as device sync (union by id, newest edit wins, deletions
-respected). After you both tap it once, you each have the complete combined journal.
-It's on-demand — nothing syncs to your partner until you press the button. (Requires
-the `shared` Firebase rule above.)
+sidebar shows a **"Sync with <partner>"** button. Tapping it does a **purely additive**
+two-way merge through a shared space — it **only ever adds**: lessons your partner has
+that you're missing are added, and within lessons you both have, any of their notes you
+don't have are added. It **never deletes or overwrites** anything you already have. If
+you've each edited the *same* seeded note differently, you each keep your own version
+(the other's isn't forced on you), and deleting a note on one side does **not** remove
+it from the other. After you both tap Sync once, each of you has the union of both
+notebooks. It's on-demand — nothing reaches your partner until you press the button.
+(Requires the `shared` Firebase rule above to be published.)
 
 ### Lessons organised by Sūrah
 

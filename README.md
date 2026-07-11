@@ -84,6 +84,13 @@ it from the other. After you both tap Sync once, each of you has the union of bo
 notebooks. It's on-demand — nothing reaches your partner until you press the button.
 (Requires the `shared` Firebase rule above to be published.)
 
+Lessons are matched first by their hidden ID (so the seeded lessons always line up, even
+if you each renamed them), and — as a fallback — by **Sūrah + title**: if you *both*
+independently created a lesson with the same meaningful title for the same Sūrah, sync
+folds them into one instead of leaving two duplicates. Default names like "Lesson 4" are
+never auto-merged (they'd collide by accident), so give a lesson a real title if you want
+it to line up with your partner's.
+
 ### Lessons organised by Sūrah
 
 The sidebar groups lessons under the **Sūrah** they relate to (derived from the verses

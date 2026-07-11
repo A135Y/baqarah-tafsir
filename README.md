@@ -84,12 +84,20 @@ it from the other. After you both tap Sync once, each of you has the union of bo
 notebooks. It's on-demand — nothing reaches your partner until you press the button.
 (Requires the `shared` Firebase rule above to be published.)
 
-Lessons are matched first by their hidden ID (so the seeded lessons always line up, even
-if you each renamed them), and — as a fallback — by **Sūrah + title**: if you *both*
-independently created a lesson with the same meaningful title for the same Sūrah, sync
-folds them into one instead of leaving two duplicates. Default names like "Lesson 4" are
-never auto-merged (they'd collide by accident), so give a lesson a real title if you want
-it to line up with your partner's.
+Lessons are matched in this order so the right ones line up without duplicating:
+
+1. **By hidden ID** — the seeded lessons always match, even if you each renamed them.
+2. **By date** — every lesson has a **date** (shown in its header, defaulting to the day
+   you created it and editable). If you both add a lesson with the same date — e.g. you
+   attend the same class and each write it up that day — sync folds them into one. If you
+   type yours up a day late, just set the lesson's date back to the class date so they
+   still line up.
+3. **By Sūrah + title** — if the dates differ but you both gave the lesson the same
+   meaningful title for the same Sūrah, they still merge.
+
+A lesson that matches none of these — one only *you* have — simply transfers to your
+partner whole on the next sync (nothing to merge). Default names like "Lesson 4" and
+blank dates are never auto-merged, so unrelated lessons can't collide by accident.
 
 ### Lessons organised by Sūrah
 

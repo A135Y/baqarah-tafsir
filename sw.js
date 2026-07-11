@@ -7,7 +7,7 @@
    - Firebase Realtime Database + Auth traffic: never touched — always the network,
      so live sync and sign-in are never served stale.
    Bump CACHE to invalidate old caches on deploy. */
-const CACHE = "baqarah-tafsir-v7";
+const CACHE = "baqarah-tafsir-v8";
 
 const PRECACHE = [
   "/",
